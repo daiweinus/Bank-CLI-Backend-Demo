@@ -1,14 +1,12 @@
-package com.ocbc.backenddemo.controller;
+package com.example.demo.controller;
 
-import com.ocbc.backenddemo.entity.Debt;
-import com.ocbc.backenddemo.entity.User;
-import com.ocbc.backenddemo.model.ResponseModel;
-import com.ocbc.backenddemo.repository.CollectionRepository;
-import com.ocbc.backenddemo.repository.DebtRepository;
-import com.ocbc.backenddemo.repository.UserRepository;
-import com.ocbc.backenddemo.service.CollectionService;
-import com.ocbc.backenddemo.service.DebtService;
-import com.ocbc.backenddemo.service.UserService;
+import com.example.demo.entity.Debt;
+import com.example.demo.entity.User;
+import com.example.demo.model.ResponseModel;
+import com.example.demo.repository.DebtRepository;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.service.DebtService;
+import com.example.demo.service.UserService;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -20,6 +18,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,15 +28,6 @@ import static org.mockito.Mockito.when;
 
 @DataJpaTest
 public class CommandControllerTest {
-
-    @MockBean
-    UserRepository userRepository;
-
-    @MockBean
-    DebtRepository debtRepository;
-
-    @MockBean
-    CollectionRepository collectionRepository;
 
     @MockBean
     ResponseModel responseModel;
@@ -51,53 +41,58 @@ public class CommandControllerTest {
     @MockBean
     Debt debt;
 
+    @MockBean
     UserService userService;
+
+    @MockBean
     DebtService debtService;
-    CollectionService collectionService;
+
+    @MockBean
     CommandController commandController;
+
+    @MockBean
+    private UserRepository userRepository;
+
+    @MockBean
+    private DebtRepository debtRepository;
 
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
         when(userRepository.findAll()).thenReturn(userList);
-        User c = new User("Bob", 0);
+        User c = new User("test", BigDecimal.ZERO);
         when(userRepository.save(c)).thenReturn(user);
     }
 
     @Test
-    public void testLoginClient() {
+    public void loginClientTest() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        userService = new UserService(userRepository, debtRepository, collectionRepository, debtService, collectionService);
-        debtService = new DebtService(userRepository, debtRepository, collectionRepository);
-        collectionService = new CollectionService(userRepository, debtRepository, collectionRepository);
-        commandController = new CommandController(userService, debtService, collectionService);
+        userService = new UserService(userRepository, debtRepository, debtService);
+        debtService = new DebtService(debtRepository);
+        commandController = new CommandController(userService, debtService);
 
-        ResponseEntity<?> responseEntity = commandController.loginCommand("Bob");
+        ResponseEntity<?> responseEntity = commandController.loginCommand("Alice");
         assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
         String jsonStr = Objects.requireNonNull(responseEntity.getBody()).toString();
         assertNotNull(jsonStr);
     }
 
     @Test
-    public void testTestTopupClient() {
+    public void topupClientTest() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        CommandController commandController = new CommandController(userService, debtService, collectionService);
-        ResponseEntity<?> responseEntity = commandController.topupCommand("Bob", "100");
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
-        responseEntity = commandController.topupCommand("Bob", "-100");
+        CommandController commandController = new CommandController(userService, debtService);
+        ResponseEntity<?> responseEntity = commandController.topupCommand("Alice", "100");
         assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
     }
 
     @Test
-    public void testPayClient() {
+    public void payClientTest() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        CommandController commandController = new CommandController(userService, debtService, collectionService);
-        ResponseEntity<?> responseEntity = commandController.payCommand("Bob", "Alice", "100");
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
-        responseEntity = commandController.payCommand("Bob", "Alice", "-100");
+        CommandController commandController = new CommandController(userService, debtService);
+        ResponseEntity<?> responseEntity = commandController.payCommand("Alice", "Bob", "100");
         assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
     }
 }

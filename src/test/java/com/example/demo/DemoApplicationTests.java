@@ -1,4 +1,4 @@
-package com.ocbc.backenddemo;
+package com.example.demo;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -7,10 +7,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-class BackendDemoApplicationTests {
+class DemoApplicationTests {
 
     @Test
     void contextLoads() {
+
     }
 
 }
