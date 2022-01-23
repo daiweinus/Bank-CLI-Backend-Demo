@@ -66,11 +66,10 @@ public class CommandController {
         if (topupAmount.compareTo(BigDecimal.ZERO) <= 0) {
             map.put("isSuccess", false);
             map.put("errorMessage", "Amount should be more than $0.");
+        } else {
+            userService.topupCommand(username, topupAmount, map);
+            buildResponseModel(map, username);
         }
-
-        userService.topupCommand(username, topupAmount, map);
-        buildResponseModel(map, username);
-
         return ResponseEntity.ok().body(map);
     }
 
@@ -91,18 +90,16 @@ public class CommandController {
         if (payment.compareTo(BigDecimal.ZERO) <= 0) {
             map.put("isSuccess", false);
             map.put("errorMessage", "Amount should be more than $0.");
-        }
-        if (userService.findOneByUsername(payeeName) == null) {
+        } else if (userService.findOneByUsername(payeeName) == null) {
             map.put("isSuccess", false);
             map.put("errorMessage", "Payee name not exist.");
-        }
-        if (payerName.equalsIgnoreCase(payeeName)) {
+        } else if (payerName.equalsIgnoreCase(payeeName)) {
             map.put("isSuccess", false);
             map.put("errorMessage", "Payee name cannot be yourself.");
+        } else {
+            userService.payCommand(payerName, payeeName, payment, map);
+            buildResponseModel(map, payerName);
         }
-
-        userService.payCommand(payerName, payeeName, payment, map);
-        buildResponseModel(map, payerName);
 
         return ResponseEntity.ok().body(map);
     }
