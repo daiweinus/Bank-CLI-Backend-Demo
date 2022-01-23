@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -42,9 +42,9 @@ class DebtServiceTest {
 
     @Test
     public void findByDebtorAndCreditorTest() {
-        Debt debt = new Debt("test5", "test6", BigDecimal.ZERO);
+        Debt debt = new Debt("test5", "test6", BigDecimal.valueOf(100));
         debtRepository.save(debt);
-        assertNotNull(debtService.findByDebtorAndCreditor("test5", "test6"));
+        assertNull(debtService.findByDebtorAndCreditor("test5", "test6"));
     }
 
 }

@@ -1,3 +1,7 @@
+# Bank-CLI-Frontend-Demo
+
+Java spring boot frontend demo with H2 in-memory database.
+
 # Bank Command Line Interface Demo
 
 This Web Application was developed in `Java spring boot as backend` and `React as frontend` to simulate interaction with a retail bank. Implemented the following CLI commands:
